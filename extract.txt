@@ -1,0 +1,37 @@
+# This script processes all TextGrid files in the Objects window
+# and prints vocal fry durations to the Info window
+
+# Clear Info window and write header
+clearinfo
+writeInfoLine: "Filename", tab$, "Vocal_Fry_Duration_Sec", tab$, "Total_Duration_Sec", tab$, "Vocal_Fry_Percent"
+
+# Get all TextGrid objects and store their IDs
+n = numberOfSelected ("TextGrid")
+for i to n
+    textgrid'i' = selected ("TextGrid", i)
+endfor
+
+# Now loop through and process each one
+for i to n
+    selectObject: textgrid'i'
+    name$ = selected$ ("TextGrid")
+    
+    # Get total duration of 'c' intervals (tier 1, adjust if different)
+    fry_duration = Get total duration of intervals where: 1, "is equal to", "c"
+    
+    # Get total duration of TextGrid
+    total_duration = Get total duration
+    
+    # Calculate percentage
+    if total_duration > 0
+        fry_percent = (fry_duration / total_duration) * 100
+    else
+        fry_percent = 0
+    endif
+    
+    # Write to Info window
+    appendInfoLine: name$, tab$, fry_duration, tab$, total_duration, tab$, fry_percent
+endfor
+
+appendInfoLine: ""
+appendInfoLine: "Done! Processed ", n, " TextGrids."
